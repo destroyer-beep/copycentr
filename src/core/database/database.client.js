@@ -16,19 +16,19 @@ class ConnectionDatabase {
     constructor(config) {
         this.connected = false;
         this.client = new Client(config);
-        this.connect()
+        this.connect();
     }
 
     async connect() {
         try {
             await this.client.connect();
             this.connected = true;
-            await this._init_table()
-
             console.log('Success connect database!');
+            await this._init_table();
         } catch (e) {
             this.connected = false;
             console.warn('Error connect database - ', e.message);
+            console.warn(e);
         }
     }
 
@@ -49,21 +49,13 @@ class ConnectionDatabase {
             await this.client.query(`
             CREATE TABLE IF NOT EXISTS "users" (
             id serial primary key,   
-            user VARCHAR NOT NULL,
+            username VARCHAR NOT NULL,
             password VARCHAR NOT NULL,
             update TIMESTAMP NOT NULL DEFAULT now()
         );
      `);
 
-            await this.client.query(
-                `CREATE TABLE IF NOT EXISTS "tokens" (
-            id SERIAL PRIMARY KEY,
-            user_id INTEGER NOT NULL REFERENCES users(id),
-            token TEXT NOT NULL,
-            created TIMESTAMP NOT NULL DEFAULT now(),
-            deleted TIMESTAMP DEFAULT NULL
-        );`
-            );
+            console.log('Success crate tables!');
         } catch (e) {
             console.warn('Error create table - ', e.message);
         }
