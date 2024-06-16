@@ -10,6 +10,8 @@ export default class ConfigService {
         this.DB_PASSWORD = process.env.DB_PASSWORD;
         this.DB_USER = process.env.DB_USER;
         this.DB = process.env.DB;
+        this.DEFAULT_USER_NAME = process.env.DEFAULT_USER_NAME;
+        this.DEFAULT_USER_PASSWORD = process.env.DEFAULT_USER_PASSWORD;
     }
     get(envName) {
         const env = this[envName];

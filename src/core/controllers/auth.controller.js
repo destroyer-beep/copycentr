@@ -1,4 +1,5 @@
 import {UserService} from "../services/User.service.js";
+import {UserRepository} from "../repositories/User.repository.js";
 
 class AuthController {
 
@@ -8,7 +9,7 @@ class AuthController {
     async login(req, res) {
         try {
             const {username, password} = req.body;
-            const service = new UserService();
+            const service = new UserService(UserRepository);
             const user = await service.loginUser(username, password);
 
             res.send(user).end();

@@ -1,8 +1,10 @@
 import pg from 'pg';
 import ConfigService from "../config/config.service.js";
+import {getHashPassword} from "../helpers/hashPassword.js";
+import {getTables} from "./helpers/getTables.js";
 
 const configService = new ConfigService();
-const { Client } = pg;
+const {Client} = pg;
 
 const config = {
     host: configService.get('DB_HOST'),
@@ -46,19 +48,39 @@ class ConnectionDatabase {
 
     async _init_table() {
         try {
-            await this.client.query(`
-            CREATE TABLE IF NOT EXISTS "users" (
-            id serial primary key,   
-            username VARCHAR NOT NULL,
-            password VARCHAR NOT NULL,
-            update TIMESTAMP NOT NULL DEFAULT now()
-        );
-     `);
 
-            console.log('Success crate tables!');
+            const {tables, fileNames} = getTables();
+
+            if (!tables.length) return;
+            await this.client.query('BEGIN');
+            const promises = tables.map(q => this.client.query(q));
+            await Promise.all(promises);
+            await this.client.query('COMMIT');
+
+
+            if (!(await this.defaultUserExist())) {
+                const hashPassword = await getHashPassword(configService.get('DEFAULT_USER_PASSWORD'))
+                await this.client.query(
+                    `INSERT INTO users (username, password) VALUES ('${
+                configService.get('DEFAULT_USER_NAME')
+            }', '${await getHashPassword(hashPassword)}');`
+                );
+            }
+            console.log('Success create tables in ' + fileNames + ' files!');
         } catch (e) {
-            console.warn('Error create table - ', e.message);
+            console.error('Error create table - ', e.message);
+            await this.client.query('ROLLBACK');
+
+            throw e;
         }
+    }
+
+    async defaultUserExist() {
+        const result = await this.executeQuery(
+            'SELECT * FROM users WHERE username = $1',
+            [configService.get('DEFAULT_USER_NAME')]
+        );
+        return result?.rows?.length > 0;
     }
 }
 

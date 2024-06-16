@@ -11,7 +11,7 @@ export class UserRepository {
         else return result.rows[0];
     }
 
-    async getUserByLogin(username) {
+    async getUserByUsername(username) {
         const result = await this.#db.executeQuery(
             'SELECT * FROM users WHERE username = $1',
             [username]
