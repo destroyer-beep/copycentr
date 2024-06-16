@@ -10,9 +10,9 @@ class AuthController {
         try {
             const {username, password} = req.body;
             const service = new UserService(UserRepository);
-            const user = await service.loginUser(username, password);
+            const tokens = await service.loginUser(username, password);
 
-            res.send(user).end();
+            res.send(tokens).end();
         } catch (e) {
             res.status(403).send({ message: e.message });
         }

@@ -1,6 +1,6 @@
 import pg from 'pg';
 import ConfigService from "../config/config.service.js";
-import {getHashPassword} from "../helpers/hashPassword.js";
+import {getHashPassword} from "../helpers/authHelpers.js";
 import {getTables} from "./helpers/getTables.js";
 
 const configService = new ConfigService();

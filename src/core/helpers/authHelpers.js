@@ -8,3 +8,7 @@ export async function getHashPassword(password) {
         throw new Error(err.message);
     }
 }
+
+export async function compareHashPassword(hash, password) {
+    return await argon2.verify(hash, password);
+}
