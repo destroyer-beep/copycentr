@@ -55,7 +55,7 @@ class AuthController {
             const newToken = service.createBearerToken(userId);
 
             res.status(200).send({
-                token: newToken
+                refreshToken: newToken
             })
 
         } catch (e) {
