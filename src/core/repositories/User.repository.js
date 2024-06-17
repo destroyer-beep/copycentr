@@ -28,9 +28,18 @@ export class UserRepository {
         return this.#checkQueryExecutionResult(result);
     }
 
+    async getRefreshTokenById(userId) {
+        const result = await this.#db.executeQuery(
+            'SELECT * FROM tokens WHERE user_id = $1 ORDER BY created DESC LIMIT 1',
+            [userId]
+        );
+
+        return this.#checkQueryExecutionResult(result);
+    }
+
     async insertToken(token, user_id) {
         return this.#db.executeQuery(
-            'INSERT INTO tokens (token, user_id) VALUES ($1, $2)',
+            'INSERT INTO tokens (refresh_token, user_id) VALUES ($1, $2)',
             [token, user_id]
         );
     }

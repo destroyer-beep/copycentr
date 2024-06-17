@@ -29,8 +29,8 @@ class ConnectionDatabase {
             await this._init_table();
         } catch (e) {
             this.connected = false;
-            console.warn('Error connect database - ', e.message);
-            console.warn(e);
+            console.error('Error connect database - ', e.message);
+            console.error(e);
         }
     }
 
@@ -59,12 +59,11 @@ class ConnectionDatabase {
 
 
             if (!(await this.defaultUserExist())) {
-                const hashPassword = await getHashPassword(configService.get('DEFAULT_USER_PASSWORD'))
+                const userName = configService.get('DEFAULT_USER_NAME');
+                const hashPassword = await getHashPassword(configService.get('DEFAULT_USER_PASSWORD'));
                 await this.client.query(
-                    `INSERT INTO users (username, password) VALUES ('${
-                configService.get('DEFAULT_USER_NAME')
-            }', '${await getHashPassword(hashPassword)}');`
-                );
+                    `INSERT INTO users (username, password) VALUES ($1, $2);`
+                , [userName, hashPassword]);
             }
             console.log('Success create tables in ' + fileNames + ' files!');
         } catch (e) {

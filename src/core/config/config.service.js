@@ -12,12 +12,13 @@ export default class ConfigService {
         this.DB = process.env.DB;
         this.DEFAULT_USER_NAME = process.env.DEFAULT_USER_NAME;
         this.DEFAULT_USER_PASSWORD = process.env.DEFAULT_USER_PASSWORD;
+        this.JWT_SECRET = process.env.JWT_SECRET;
     }
     get(envName) {
         const env = this[envName];
         if(env) return env;
 
-        console.warn(`The requested variable ${envName} is not defined in the .env file`);
+        console.error(`The requested variable ${envName} is not defined in the .env file`);
         process.exit(1);
     }
 }

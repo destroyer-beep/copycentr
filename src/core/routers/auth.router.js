@@ -8,5 +8,6 @@ authRouter.get('/check', authCheckMiddleware, authController.check);
 authRouter.post('/login', authController.login);
 authRouter.get('/logout', authController.logout);
 authRouter.post('/restore', authController.restorePassword);
+authRouter.post('/refresh', authController.refreshToken);
 
 export default authRouter;
