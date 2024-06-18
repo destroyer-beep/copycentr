@@ -16,7 +16,7 @@ export class UserService {
     }
 
     createBearerToken(userId) {
-        const {bearerToken, refreshToken} = createJwtTokens(userId);
+        const {bearerToken} = createJwtTokens(userId);
         return bearerToken;
     }
 

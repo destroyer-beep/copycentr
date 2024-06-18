@@ -19,7 +19,7 @@ export function createJwtTokens(userId) {
     const configService = new ConfigService();
     const jwtSecret = configService.get('JWT_SECRET');
 
-    const bearerToken = jwt.sign({userId}, jwtSecret, {expiresIn: '1h'});
+    const bearerToken = jwt.sign({userId}, jwtSecret, {expiresIn: '7d'});
     const refreshToken = jwt.sign({userId}, jwtSecret, {expiresIn: '7d'});
 
     return {
