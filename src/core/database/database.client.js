@@ -55,26 +55,25 @@ class ConnectionDatabase {
             if (!tables.length) return;
             await this.client.query('BEGIN');
             const promises = tables.map(q => this.client.query(q));
-            await Promise.all(promises);
-            await this.client.query('COMMIT');
 
 
-            if (!(await this.defaultUserExist())) {
-                const userName = configService.get('DEFAULT_USER_NAME');
-                const hashPassword = await getHashPassword(configService.get('DEFAULT_USER_PASSWORD'));
-                await this.client.query(
-                    `INSERT INTO users (username, password) VALUES ($1, $2);`
-                , [userName, hashPassword]);
-            }
+            const userName = configService.get('DEFAULT_USER_NAME');
+            const hashPassword = await getHashPassword(configService.get('DEFAULT_USER_PASSWORD'));
+            await this.client.query(
+                `INSERT INTO users (username, password) VALUES ($1, $2) ON CONFLICT DO NOTHING;`
+            , [userName, hashPassword]);
 
             if (!(await this.defaultProductsExist())) {
                 const productsList = getProductsList();
                 const productTitleList = Object.keys(productsList);
 
-                const promises = productTitleList.map(key => this.client.query(`INSERT INTO products (title, price) VALUES ($1, $2);`
+                const productPromises = productTitleList.map(key => this.client.query(`INSERT INTO products (title, price) VALUES ($1, $2) ON CONFLICT DO NOTHING;`
                     , [key, productsList[key]]));
-                await Promise.all(promises);
+                promises.push(...productPromises);
             }
+
+            await Promise.all(promises);
+            await this.client.query('COMMIT');
             console.log('Success create tables in ' + fileNames + ' files!');
         } catch (e) {
             console.error('Error create table - ', e.message);
@@ -82,14 +81,6 @@ class ConnectionDatabase {
 
             throw e;
         }
-    }
-
-    async defaultUserExist() {
-        const result = await this.executeQuery(
-            'SELECT * FROM users WHERE username = $1',
-            [configService.get('DEFAULT_USER_NAME')]
-        );
-        return result?.rows?.length > 0;
     }
 
     async defaultProductsExist() {
