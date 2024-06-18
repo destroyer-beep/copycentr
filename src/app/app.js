@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import authRouter from "../core/routers/auth.router.js";
+import productRouter from "../core/routers/product.router.js";
 
 export default class ServerApp {
     constructor(config) {
@@ -10,6 +11,7 @@ export default class ServerApp {
 
     async _initRoutes() {
         this.expressApplication.use('/auth', authRouter);
+        this.expressApplication.use('/product', productRouter);
     }
     async _initMiddlewares() {
         this.expressApplication.use(cors());

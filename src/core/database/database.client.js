@@ -56,7 +56,6 @@ class ConnectionDatabase {
             await this.client.query('BEGIN');
             const promises = tables.map(q => this.client.query(q));
 
-
             const userName = configService.get('DEFAULT_USER_NAME');
             const hashPassword = await getHashPassword(configService.get('DEFAULT_USER_PASSWORD'));
             await this.client.query(
