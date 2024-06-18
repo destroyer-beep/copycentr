@@ -2,6 +2,7 @@ import pg from 'pg';
 import ConfigService from "../config/config.service.js";
 import {getHashPassword} from "../helpers/authHelpers.js";
 import {getTables} from "./helpers/getTables.js";
+import {getProductsList} from "./helpers/getProductList.js";
 
 const configService = new ConfigService();
 const {Client} = pg;
@@ -65,6 +66,15 @@ class ConnectionDatabase {
                     `INSERT INTO users (username, password) VALUES ($1, $2);`
                 , [userName, hashPassword]);
             }
+
+            if (!(await this.defaultProductsExist())) {
+                const productsList = getProductsList();
+                const productTitleList = Object.keys(productsList);
+
+                const promises = productTitleList.map(key => this.client.query(`INSERT INTO products (title, price) VALUES ($1, $2);`
+                    , [key, productsList[key]]));
+                await Promise.all(promises);
+            }
             console.log('Success create tables in ' + fileNames + ' files!');
         } catch (e) {
             console.error('Error create table - ', e.message);
@@ -78,6 +88,14 @@ class ConnectionDatabase {
         const result = await this.executeQuery(
             'SELECT * FROM users WHERE username = $1',
             [configService.get('DEFAULT_USER_NAME')]
+        );
+        return result?.rows?.length > 0;
+    }
+
+    async defaultProductsExist() {
+        const result = await this.executeQuery(
+            'SELECT * FROM products',
+            []
         );
         return result?.rows?.length > 0;
     }
