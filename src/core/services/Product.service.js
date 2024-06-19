@@ -9,13 +9,13 @@ export class ProductService {
     }
 
     async deleteProduct(id) {
-        const product = await this.productRepo.deleteProduct(id);
-        return product;
+        const deleteCount = await this.productRepo.deleteProduct(id);
+        return deleteCount;
     }
 
     async updateProduct(id, title, price) {
-        const product = await this.productRepo.updateProduct(id, title, price);
-        return product;
+        const updateCount = await this.productRepo.updateProduct(id, title, price);
+        return updateCount;
     }
 
     async createProduct(title, price) {

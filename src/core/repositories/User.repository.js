@@ -43,12 +43,4 @@ export class UserRepository {
             [token, user_id]
         );
     }
-
-    async getOneToken(token) {
-        const result = await this.#db.executeQuery(
-            'SELECT * FROM tokens WHERE token = $1 LIMIT 1',
-            [token]
-        );
-        return this.#checkQueryExecutionResult(result);
-    }
 }

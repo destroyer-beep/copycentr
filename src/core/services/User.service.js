@@ -15,8 +15,8 @@ export class UserService {
         return refreshToken;
     }
 
-    createBearerToken(userId) {
-        const {bearerToken} = createJwtTokens(userId);
+    createBearerToken(userId, role) {
+        const {bearerToken} = createJwtTokens(userId, role);
         return bearerToken;
     }
 
@@ -27,7 +27,7 @@ export class UserService {
             const checkPassword = await compareHashPassword(user.password, password);
             if (!checkPassword) throw new Error('Incorrect login and/or password');
 
-            const {bearerToken, refreshToken} = createJwtTokens(user.id);
+            const {bearerToken, refreshToken} = createJwtTokens(user.id, user.role);
             await this.userRepo.insertToken(refreshToken, user.id);
 
             return {

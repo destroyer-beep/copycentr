@@ -1,6 +1,6 @@
 import {database} from "../database/database.client.js";
 
-export class ProductRepository {
+export class SalesOneDayRepository {
     #db;
     constructor(db = database) {
         this.#db = db;
@@ -13,36 +13,36 @@ export class ProductRepository {
         else return result.rows;
     }
 
-    async getProductList() {
+    async getSalesOneDayList() {
         const result = await this.#db.executeQuery(
-            'SELECT * FROM products'
+            'SELECT * FROM sales_one_day'
         );
 
         return this.#checkQueryExecutionResult(result);
     }
 
-    async deleteProduct(id) {
+    async deleteSalesOne(id) {
         const result = await this.#db.executeQuery(
-            'DELETE FROM products WHERE id = $1;'
-                , [id]);
+            'DELETE FROM sales_one_day WHERE id = $1;'
+            , [id]);
 
         if(typeof result === 'string') throw new Error('Ошибка удаления в бд!')
         else return result.rowCount;
     }
 
-    async updateProduct(id, title, price) {
+    async updateSalesOne(id, title, count, sum, price) {
         const result = await this.#db.executeQuery(
-            'UPDATE products SET title = $1, price = $2 WHERE id = $3;'
-            , [title, price, id]);
+            'UPDATE sales_one_day SET title = $1, price = $2, count = $3, sum = $4 WHERE id = $5;'
+            , [title, price, count, sum, id]);
 
         if(typeof result === 'string') throw new Error('Ошибка изменения в бд!')
         else return result.rowCount;
     }
 
-    async createProduct(title, price) {
+    async createSalesOne(title, count, sum, price) {
         const result = await this.#db.executeQuery(
-            'INSERT INTO products (title, price) VALUES ($1, $2);'
-            , [title, price]);
+            'INSERT INTO sales_one_day (title, price, count, sum) VALUES ($1, $2, $3, $4);'
+            , [title, price, count, sum]);
         return this.#checkQueryExecutionResult(result);
     }
 }

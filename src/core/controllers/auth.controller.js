@@ -12,12 +12,13 @@ class AuthController {
             const bearerTokenInHeaders = req.headers['authorization'];
             const bearerToken = bearerTokenInHeaders.replace('Bearer ', '');
 
-            const userId = verifyJwtTokens(bearerToken);
+            const {userId} = verifyJwtTokens(bearerToken);
 
             const user = await service.getUserById(userId);
             const response = {
                 username: user.username,
-                userId: user.id
+                userId: user.id,
+                role: user.role
             }
             res.status(200).send(response);
         } catch (e) {
@@ -33,7 +34,7 @@ class AuthController {
 
             res.send(tokens);
         } catch (e) {
-            res.status(403).send({ message: e.message });
+            res.status(401).send({ message: e.message });
         }
     }
 
@@ -41,9 +42,14 @@ class AuthController {
         try {
             const {refreshToken} = req.body;
 
+            if(!refreshToken) {
+                res.status(400).send({message: 'Refresh token is empty!'});
+                return;
+            }
+
             const userRepository = new UserRepository();
             const service = new UserService(userRepository);
-            const userId = verifyJwtTokens(refreshToken);
+            const {userId, role} = verifyJwtTokens(refreshToken);
 
             const {refresh_token} = await service.getRefreshTokenById(userId);
 
@@ -52,7 +58,7 @@ class AuthController {
                 return;
             }
 
-            const newToken = service.createBearerToken(userId);
+            const newToken = service.createBearerToken(userId, role);
 
             res.status(200).send({
                 refreshToken: newToken
