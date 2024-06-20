@@ -17,6 +17,4 @@ export default function authCheckMiddleware(req, res, next) {
     } catch (e) {
         res.status(401).send({message: e.message});
     }
-
-
 }

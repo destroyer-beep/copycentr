@@ -7,7 +7,7 @@ export class SalesOneDayRepository {
     }
 
     #checkQueryExecutionResult(result) {
-        if(typeof result === 'string') throw new Error('Ошибка записи в бд!')
+        if(typeof result === 'string') throw new Error('Ошибка записи в бд!');
         if (!result?.rows?.length) return undefined;
         else if (result.rows.length === 1) return result.rows[0];
         else return result.rows;
@@ -21,7 +21,7 @@ export class SalesOneDayRepository {
         return this.#checkQueryExecutionResult(result);
     }
 
-    async deleteSalesOne(id) {
+    async deleteSaleOneDay(id) {
         const result = await this.#db.executeQuery(
             'DELETE FROM sales_one_day WHERE id = $1;'
             , [id]);
@@ -30,7 +30,7 @@ export class SalesOneDayRepository {
         else return result.rowCount;
     }
 
-    async updateSalesOne(id, title, count, sum, price) {
+    async updateSaleOneDay(id, title, count, sum, price) {
         const result = await this.#db.executeQuery(
             'UPDATE sales_one_day SET title = $1, price = $2, count = $3, sum = $4 WHERE id = $5;'
             , [title, price, count, sum, id]);
@@ -39,10 +39,10 @@ export class SalesOneDayRepository {
         else return result.rowCount;
     }
 
-    async createSalesOne(title, count, sum, price) {
+    async createSaleOneDay(id, title, count, sum, price) {
         const result = await this.#db.executeQuery(
-            'INSERT INTO sales_one_day (title, price, count, sum) VALUES ($1, $2, $3, $4);'
-            , [title, price, count, sum]);
+            'INSERT INTO sales_one_day (product_id, title, price, count, sum) VALUES ($1, $2, $3, $4, $5);'
+            , [id, title, price, count, sum]);
         return this.#checkQueryExecutionResult(result);
     }
 }

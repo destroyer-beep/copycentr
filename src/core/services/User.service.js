@@ -22,7 +22,7 @@ export class UserService {
 
     async loginUser(username, password) {
             const user = await this.userRepo.getUserByUsername(username);
-            if (!user) throw new Error('User not found');
+            if (!user) throw new Error('Incorrect login and/or password');
 
             const checkPassword = await compareHashPassword(user.password, password);
             if (!checkPassword) throw new Error('Incorrect login and/or password');

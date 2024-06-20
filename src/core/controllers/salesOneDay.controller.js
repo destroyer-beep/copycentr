@@ -49,7 +49,7 @@ class SalesOneDayController {
 
     async createSaleOneDay(req, res) {
         try {
-            const {title, price, count, sum} = req.body;
+            const {id, title, price, count, sum} = req.body;
             if(!title || !price || !count || !sum) {
                 res.status(400).send({message: 'Title or price or count or sum is empty!'});
                 return;
@@ -57,7 +57,7 @@ class SalesOneDayController {
             const salesOneDayRepository = new SalesOneDayRepository();
             const salesOneDayService = new SalesOneDayService(salesOneDayRepository);
 
-            const sale = await salesOneDayService.createSaleOneDay(title, price, count, sum);
+            const sale = await salesOneDayService.createSaleOneDay(id, title, price, count, sum);
 
             res.status(200).send(sale);
         } catch (e) {

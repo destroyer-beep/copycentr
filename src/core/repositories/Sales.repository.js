@@ -21,7 +21,7 @@ export class SalesRepository {
         return this.#checkQueryExecutionResult(result);
     }
 
-    async deleteSales(id) {
+    async deleteSale(id) {
         const result = await this.#db.executeQuery(
             'DELETE FROM sales WHERE id = $1;'
             , [id]);
@@ -30,7 +30,7 @@ export class SalesRepository {
         else return result.rowCount;
     }
 
-    async updateSales(id, title, count, sum, price) {
+    async updateSale(id, title, count, sum, price) {
         const result = await this.#db.executeQuery(
             'UPDATE sales SET title = $1, price = $2, count = $3, sum = $4 WHERE id = $5;'
             , [title, price, count, sum, id]);
@@ -39,7 +39,7 @@ export class SalesRepository {
         else return result.rowCount;
     }
 
-    async createSales(title, count, sum, price) {
+    async createSale(title, count, sum, price) {
         const result = await this.#db.executeQuery(
             'INSERT INTO sales (title, price, count, sum) VALUES ($1, $2, $3, $4);'
             , [title, price, count, sum]);

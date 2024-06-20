@@ -9,17 +9,17 @@ export class SalesService {
     }
 
     async deleteSale(id) {
-        const deleteCount = await this.salesRepo.deleteSales(id);
+        const deleteCount = await this.salesRepo.deleteSale(id);
         return deleteCount;
     }
 
     async updateSale(id, title, count, sum, price) {
-        const updateCount = await this.salesRepo.updateSales(id, title, count, sum, price);
+        const updateCount = await this.salesRepo.updateSale(id, title, count, sum, price);
         return updateCount;
     }
 
     async createSale(title, count, sum, price) {
-        const product = await this.salesRepo.createSales(title, count, sum, price);
+        const product = await this.salesRepo.createSale(title, count, sum, price);
         return product;
     }
 }
