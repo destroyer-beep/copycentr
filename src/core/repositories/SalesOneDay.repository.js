@@ -18,7 +18,9 @@ export class SalesOneDayRepository {
             'SELECT * FROM sales_one_day'
         );
 
-        return this.#checkQueryExecutionResult(result);
+        if(typeof result === 'string') throw new Error('Ошибка записи в бд!');
+        if (!result?.rows?.length) return [];
+        else return result.rows;
     }
 
     async deleteSaleOneDay(id) {
