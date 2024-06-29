@@ -8,14 +8,15 @@ import { getRolesList } from './helpers/getRolesList.js';
 const configService = new ConfigService();
 const { Client } = pg;
 
+
 class ConnectionDatabase {
     constructor(
         config = {
             host: configService.get('DB_HOST'),
             port: configService.get('DB_PORT'),
-            database: configService.get('DB'),
-            user: configService.get('DB_USER'),
-            password: configService.get('DB_PASSWORD'),
+            database: 'copycenter',
+            user: 'copycenter',
+            password: 'copycenter',
         },
     ) {
         this.connected = false;
@@ -26,12 +27,14 @@ class ConnectionDatabase {
     async connect() {
         try {
             await this.client.connect();
+            console.log((await this.client.query('select now()')).rows)
             this.connected = true;
             console.log('Success connect database!');
-            await this._init_table();
+            await this.#initTable();
         } catch (e) {
             this.connected = false;
-            console.error('Error connect database - ', e.message);
+            // console.error('Error connect database - ', e);
+            console.log(e.message.toString())
             console.error(e);
         }
     }
@@ -48,7 +51,7 @@ class ConnectionDatabase {
         }
     }
 
-    async _init_table() {
+    async #initTable() {
         try {
             const { tables, fileNames } = getTables();
 

@@ -1,8 +1,7 @@
 CREATE TABLE IF NOT EXISTS "users" (
     id SERIAL PRIMARY KEY,
-    username VARCHAR NOT NULL,
+    username VARCHAR NOT NULL UNIQUE,
     password VARCHAR NOT NULL,
-    role VARCHAR NOT NULL REFERENCES roles(role),
     update TIMESTAMP NOT NULL DEFAULT now(),
-    CONSTRAINT unique_name UNIQUE (username)
+    created TIMESTAMP NOT NULL DEFAULT now()
 );
