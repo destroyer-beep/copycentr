@@ -1,23 +1,23 @@
 import pg from 'pg';
-import ConfigService from "../config/config.service.js";
-import {getHashPassword} from "../helpers/authHelpers.js";
-import {getTables} from "./helpers/getTables.js";
-import {getProductsList} from "./helpers/getProductList.js";
-import {getRolesList} from "./helpers/getRolesList.js";
+import ConfigService from '../config/config.service.js';
+import { getHashPassword } from '../helpers/authHelpers.js';
+import { getTables } from './helpers/getTables.js';
+import { getProductsList } from './helpers/getProductList.js';
+import { getRolesList } from './helpers/getRolesList.js';
 
 const configService = new ConfigService();
-const {Client} = pg;
-
-const config = {
-    host: configService.get('DB_HOST'),
-    port: configService.get('DB_PORT'),
-    database: configService.get('DB'),
-    user: configService.get('DB_USER'),
-    password: configService.get('DB_PASSWORD')
-};
+const { Client } = pg;
 
 class ConnectionDatabase {
-    constructor(config) {
+    constructor(
+        config = {
+            host: configService.get('DB_HOST'),
+            port: configService.get('DB_PORT'),
+            database: configService.get('DB'),
+            user: configService.get('DB_USER'),
+            password: configService.get('DB_PASSWORD'),
+        },
+    ) {
         this.connected = false;
         this.client = new Client(config);
         this.connect();
@@ -50,8 +50,7 @@ class ConnectionDatabase {
 
     async _init_table() {
         try {
-
-            const {tables, fileNames} = getTables();
+            const { tables, fileNames } = getTables();
 
             if (!tables.length) return;
             await this.client.query('BEGIN');
@@ -59,14 +58,19 @@ class ConnectionDatabase {
 
             const rolesList = getRolesList();
             const parseRolesList = Object.values(rolesList);
-            const rolesPromises = parseRolesList.map(role => this.client.query(`INSERT INTO roles (role) VALUES ($1) ON CONFLICT DO NOTHING;`
-                , [role]));
+            const rolesPromises = parseRolesList.map(role =>
+                this.client.query(`INSERT INTO roles (role) VALUES ($1) ON CONFLICT DO NOTHING;`, [role]),
+            );
             promises.push(...rolesPromises);
 
             const productsList = getProductsList();
             const productTitleList = Object.keys(productsList);
-            const productPromises = productTitleList.map(key => this.client.query(`INSERT INTO products (title, price) VALUES ($1, $2) ON CONFLICT DO NOTHING;`
-                , [key, productsList[key]]));
+            const productPromises = productTitleList.map(key =>
+                this.client.query(`INSERT INTO products (title, price) VALUES ($1, $2) ON CONFLICT DO NOTHING;`, [
+                    key,
+                    productsList[key],
+                ]),
+            );
             promises.push(...productPromises);
 
             await Promise.all(promises);
@@ -75,12 +79,13 @@ class ConnectionDatabase {
             const hashPassword = await getHashPassword(configService.get('DEFAULT_USER_PASSWORD'));
             const role = await getHashPassword(configService.get('DEFAULT_USER_ROLE'));
             await this.client.query(
-                `INSERT INTO users (username, password, role) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING;`
-                , [userName, hashPassword, 'admin']);
+                `INSERT INTO users (username, password, role) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING;`,
+                [userName, hashPassword, 'admin'],
+            );
             await this.client.query('COMMIT');
-            console.log('Success create tables in ' + fileNames + ' files!');
+            console.log('Success create db scripts in ' + fileNames + ' files!');
         } catch (e) {
-            console.error('Error create table - ', e.message);
+            console.error('Error create table - ', e);
             await this.client.query('ROLLBACK');
 
             throw e;
@@ -88,12 +93,9 @@ class ConnectionDatabase {
     }
 
     async defaultProductsExist() {
-        const result = await this.executeQuery(
-            'SELECT * FROM products',
-            []
-        );
+        const result = await this.executeQuery('SELECT * FROM products', []);
         return result?.rows?.length > 0;
     }
 }
 
-export const database = new ConnectionDatabase(config);
+export const database = new ConnectionDatabase();

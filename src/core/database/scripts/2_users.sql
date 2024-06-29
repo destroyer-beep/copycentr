@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS "users" (
-    id serial primary key,
+    id SERIAL PRIMARY KEY,
     username VARCHAR NOT NULL,
     password VARCHAR NOT NULL,
     role VARCHAR NOT NULL REFERENCES roles(role),
